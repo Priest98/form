@@ -22,18 +22,14 @@ export async function POST(request: Request) {
 *Frustrating Part:*
 ${body.frustratingPart}
 
-*Forgotten Posts:* ${body.forgottenPost}
 *Stopped Consistently:* ${body.stoppedConsistently}
 
 *Value of AI Automation (1-5):* ${body.valueScore}
-*Time Saving Features:* ${body.saveTimeFeature.join(', ')}
-*Trust AI blindly?:* ${body.trustAI}
-*Would pay for 5-10hr savings?:* ${body.payConsideration}
 
 *Reason not to use:*
 ${body.stopUsing}
 
-*Batch Creation Likelihood:* ${body.batchCreationLikelihood}
+
 
 *Early Access:* ${body.wantsEarlyAccess === "Yes" ? '✅ Yes' : '❌ No'}
 

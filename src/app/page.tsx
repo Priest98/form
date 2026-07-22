@@ -81,15 +81,10 @@ export default function SurveyForm() {
     formData.manageWorkflow,
     formData.timeSpent,
     formData.frustratingPart,
-    formData.forgottenPost,
     formData.stoppedConsistently,
     formData.valueScore,
-    formData.saveTimeFeature.length > 0,
-    formData.trustAI,
-    formData.payConsideration,
     formData.stopUsing,
-    formData.wantsEarlyAccess,
-    formData.batchCreationLikelihood
+    formData.wantsEarlyAccess
   ];
   const progress = Math.round((requiredFields.filter(Boolean).length / requiredFields.length) * 100);
 
@@ -206,17 +201,7 @@ export default function SurveyForm() {
             <Textarea required className="mt-4" rows={3} placeholder="Short answer..." value={formData.frustratingPart} onChange={(e: any) => updateField("frustratingPart", e.target.value)} />
           </Card>
 
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">7. Have you ever created content but forgotten to post it? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Frequently", "Sometimes", "Rarely", "Never"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="forgot" value={opt} checked={formData.forgottenPost === opt} onChange={(e) => updateField("forgottenPost", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
+
 
           <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
             <Label className="text-lg text-slate-900">8. Have you ever stopped posting consistently because it became too time-consuming? <span className="text-red-500">*</span></Label>
@@ -251,46 +236,7 @@ export default function SurveyForm() {
             </div>
           </Card>
 
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">10. Which feature would save you the most time? (Choose up to 3) <span className="text-red-500">*</span></Label>
-            <p className="text-sm text-slate-500 font-medium">Selected: {formData.saveTimeFeature.length}/3</p>
-            <div className="space-y-3 mt-4">
-              {["Automatic scheduling", "AI captions", "AI hashtags", "Automatic posting", "Best posting time recommendations", "Calendar view", "Analytics", "Approval before posting"].map(opt => {
-                const isSelected = formData.saveTimeFeature.includes(opt);
-                const disabled = !isSelected && formData.saveTimeFeature.length >= 3;
-                return (
-                  <label key={opt} className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors ${disabled ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50' : 'cursor-pointer hover:bg-slate-50 border-slate-200'}`}>
-                    <input type="checkbox" disabled={disabled} checked={isSelected} onChange={() => handleCheckbox("saveTimeFeature", opt, 3)} className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-600" />
-                    <span className="text-slate-700 font-medium">{opt}</span>
-                  </label>
-                )
-              })}
-            </div>
-          </Card>
 
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">11. Would you trust AI to automatically publish your content without reviewing every post? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Yes", "Yes, but only after I approve it once", "Maybe", "No"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="trust" value={opt} checked={formData.trustAI === opt} onChange={(e) => updateField("trustAI", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">12. If this platform saved you 5–10 hours every week, would you consider paying for it? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Yes", "Maybe", "No"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="payAI" value={opt} checked={formData.payConsideration === opt} onChange={(e) => updateField("payConsideration", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
 
           <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
             <Label className="text-lg text-slate-900">13. What would stop you from using a platform like this? <span className="text-red-500">*</span></Label>
@@ -315,17 +261,7 @@ export default function SurveyForm() {
             )}
           </Card>
 
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900 leading-snug">15. If you knew your social media would run automatically for the next 7 days, how likely would you be to spend one day each week creating all your content in advance? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Very likely", "Likely", "Not sure", "Unlikely", "Very unlikely"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="batch" value={opt} checked={formData.batchCreationLikelihood === opt} onChange={(e) => updateField("batchCreationLikelihood", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
+
 
           <div className="pt-8 pb-2 border-b border-slate-200">
             <h2 className="text-2xl font-bold text-slate-800">Section 5: Contact Details</h2>
