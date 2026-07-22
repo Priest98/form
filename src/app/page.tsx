@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input, Textarea, Label } from "@/components/ui/mock-shadcn";
 
 export default function SurveyForm() {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   
@@ -25,11 +26,16 @@ export default function SurveyForm() {
     payConsideration: "",
     stopUsing: "",
     wantsEarlyAccess: "",
+    batchCreationLikelihood: "",
     name: "",
     email: "",
     whatsapp: "",
-    batchCreationLikelihood: "",
   });
+
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   const updateField = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -74,6 +80,32 @@ export default function SurveyForm() {
     }
   };
 
+  const isPage1Valid = () => {
+    return formData.role && formData.platforms.length > 0 && formData.postFrequency && formData.manageWorkflow && formData.timeSpent;
+  };
+
+  const isPage2Valid = () => {
+    return formData.frustratingPart && formData.forgottenPost && formData.stoppedConsistently && formData.valueScore && formData.saveTimeFeature.length > 0;
+  };
+
+  const handleNext = () => {
+    if (currentPage === 1 && !isPage1Valid()) {
+      setError("Please answer all required questions before proceeding.");
+      return;
+    }
+    if (currentPage === 2 && !isPage2Valid()) {
+      setError("Please answer all required questions before proceeding.");
+      return;
+    }
+    setError("");
+    setCurrentPage(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    setError("");
+    setCurrentPage(prev => prev - 1);
+  };
+
   const requiredFields = [
     formData.role,
     formData.platforms.length > 0,
@@ -81,10 +113,16 @@ export default function SurveyForm() {
     formData.manageWorkflow,
     formData.timeSpent,
     formData.frustratingPart,
+    formData.forgottenPost,
     formData.stoppedConsistently,
     formData.valueScore,
+    formData.saveTimeFeature.length > 0,
+    formData.trustAI,
+    formData.payConsideration,
     formData.stopUsing,
-    formData.wantsEarlyAccess
+    formData.wantsEarlyAccess,
+    formData.batchCreationLikelihood,
+    formData.email
   ];
   const progress = Math.round((requiredFields.filter(Boolean).length / requiredFields.length) * 100);
 
@@ -103,9 +141,6 @@ export default function SurveyForm() {
             <p>We&apos;re building an AI-powered platform that helps creators and businesses automate their social media content.</p>
             <p>Imagine spending one day creating content, uploading it to a folder, and having AI automatically generate captions, schedule, and publish your content throughout the week.</p>
           </div>
-          <div className="flex justify-center items-center gap-2 text-sm text-slate-500 font-medium bg-slate-100 py-2 px-4 rounded-full w-fit mx-auto">
-             <span>⏱ Takes &lt; 3 minutes</span>
-          </div>
         </div>
 
         {/* Progress Bar */}
@@ -113,175 +148,244 @@ export default function SurveyForm() {
           <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
             <div className="bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
           </div>
-          <p className="text-right text-xs text-slate-500 mt-2 font-medium">{progress}% Completed</p>
+          <p className="text-right text-xs text-slate-500 mt-2 font-medium">Page {currentPage} of 3 • {progress}% Completed</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
           
-          <div className="pt-4 pb-2 border-b border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-800">Section 1: About You</h2>
-          </div>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">1. Which best describes you? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Fashion Designer", "Clothing Brand", "Content Creator", "Small Business Owner", "Digital Marketer", "Other"].map(opt => (
-                <div key={opt}>
-                  <label className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                    <input type="radio" required name="role" value={opt} checked={formData.role === opt} onChange={(e) => updateField("role", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                    <span className="text-slate-700 font-medium">{opt}</span>
-                  </label>
-                  {opt === "Other" && formData.role === "Other" && (
-                    <Input className="mt-3" placeholder="Please specify..." value={formData.roleOther} onChange={(e: any) => updateField("roleOther", e.target.value)} required />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">2. Which platforms do you post on regularly? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Instagram", "TikTok", "Facebook", "X (Twitter)", "LinkedIn", "YouTube Shorts"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="checkbox" checked={formData.platforms.includes(opt)} onChange={() => handleCheckbox("platforms", opt)} className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
-
-          <div className="pt-8 pb-2 border-b border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-800">Section 2: Current Workflow</h2>
-          </div>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">3. How often do you post content? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Multiple times a day", "Once a day", "A few times a week", "Once a week", "Rarely"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="freq" value={opt} checked={formData.postFrequency === opt} onChange={(e) => updateField("postFrequency", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">4. How do you currently manage your content? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Post manually every day", "Schedule posts using another tool", "I don't have a content schedule", "Someone manages it for me"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="manage" value={opt} checked={formData.manageWorkflow === opt} onChange={(e) => updateField("manageWorkflow", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">5. How much time do you spend each week creating and posting content? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Less than 2 hours", "2–5 hours", "5–10 hours", "More than 10 hours"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="time" value={opt} checked={formData.timeSpent === opt} onChange={(e) => updateField("timeSpent", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
-
-          <div className="pt-8 pb-2 border-b border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-800">Section 3: Pain Points</h2>
-          </div>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">6. What is the most frustrating part of posting on social media? <span className="text-red-500">*</span></Label>
-            <Textarea required className="mt-4" rows={3} placeholder="Short answer..." value={formData.frustratingPart} onChange={(e: any) => updateField("frustratingPart", e.target.value)} />
-          </Card>
-
-
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">8. Have you ever stopped posting consistently because it became too time-consuming? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Yes", "No"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="stopped" value={opt} checked={formData.stoppedConsistently === opt} onChange={(e) => updateField("stoppedConsistently", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </Card>
-
-          <div className="pt-8 pb-2 border-b border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-800">Section 4: The Idea</h2>
-          </div>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900 leading-snug">9. If you could spend one day creating content for the entire week, then upload everything into one folder and have AI automatically: Write captions, Generate hashtags, Schedule posts, and Publish at the best times... How valuable would that be to you? <span className="text-red-500">*</span></Label>
-            <div className="flex justify-between mt-6 px-2">
-              {[1, 2, 3, 4, 5].map(opt => (
-                <label key={opt} className="flex flex-col items-center space-y-2 cursor-pointer group">
-                  <span className="text-xl">⭐</span>
-                  <input type="radio" required name="value" value={opt.toString()} checked={formData.valueScore === opt.toString()} onChange={(e) => updateField("valueScore", e.target.value)} className="w-5 h-5 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-bold">{opt}</span>
-                </label>
-              ))}
-            </div>
-            <div className="flex justify-between text-xs text-slate-500 mt-2 font-medium">
-               <span>Not Valuable</span>
-               <span>Extremely Valuable</span>
-            </div>
-          </Card>
-
-
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
-            <Label className="text-lg text-slate-900">13. What would stop you from using a platform like this? <span className="text-red-500">*</span></Label>
-            <Textarea required className="mt-4" rows={3} placeholder="Short answer..." value={formData.stopUsing} onChange={(e: any) => updateField("stopUsing", e.target.value)} />
-          </Card>
-
-          <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200 transition-all">
-            <Label className="text-lg text-slate-900">14. Would you like early access when we launch? <span className="text-red-500">*</span></Label>
-            <div className="space-y-3 mt-4">
-              {["Yes", "No"].map(opt => (
-                <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <input type="radio" required name="early" value={opt} checked={formData.wantsEarlyAccess === opt} onChange={(e) => updateField("wantsEarlyAccess", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
-                  <span className="text-slate-700 font-medium">{opt}</span>
-                </label>
-              ))}
-            </div>
-            
-            {formData.wantsEarlyAccess === "Yes" && (
-              <div className="pt-6 mt-6 border-t border-slate-100 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                <p className="text-sm text-slate-500 font-medium mb-4">Awesome! Please leave your details below so we can contact you.</p>
+          {/* PAGE 1: Questions 1 - 5 */}
+          {currentPage === 1 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+              <div className="pt-4 pb-2 border-b border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800">Section 1: About You</h2>
               </div>
-            )}
-          </Card>
 
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">1. Which best describes you? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Fashion Designer", "Clothing Brand", "Content Creator", "Small Business Owner", "Digital Marketer", "Other"].map(opt => (
+                    <div key={opt}>
+                      <label className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                        <input type="radio" required name="role" value={opt} checked={formData.role === opt} onChange={(e) => updateField("role", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                        <span className="text-slate-700 font-medium">{opt}</span>
+                      </label>
+                      {opt === "Other" && formData.role === "Other" && (
+                        <Input className="mt-3" placeholder="Please specify..." value={formData.roleOther} onChange={(e: any) => updateField("roleOther", e.target.value)} required />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Card>
 
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">2. Which platforms do you post on regularly? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Instagram", "TikTok", "Facebook", "X (Twitter)", "LinkedIn", "YouTube Shorts"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="checkbox" checked={formData.platforms.includes(opt)} onChange={() => handleCheckbox("platforms", opt)} className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
 
-          <div className="pt-8 pb-2 border-b border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-800">Section 5: Contact Details</h2>
-          </div>
+              <div className="pt-8 pb-2 border-b border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800">Section 2: Current Workflow</h2>
+              </div>
 
-          <Card className="p-6 md:p-8 space-y-6 shadow-sm border-slate-200">
-            <p className="text-sm text-slate-500 font-medium">Leave your details below so we can contact you.</p>
-            <div>
-              <Label className="mb-2 block text-slate-900 font-semibold">Name</Label>
-              <Input placeholder="Jane Doe" value={formData.name} onChange={(e: any) => updateField("name", e.target.value)} />
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">3. How often do you post content? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Multiple times a day", "Once a day", "A few times a week", "Once a week", "Rarely"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="freq" value={opt} checked={formData.postFrequency === opt} onChange={(e) => updateField("postFrequency", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">4. How do you currently manage your content? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Post manually every day", "Schedule posts using another tool", "I don't have a content schedule", "Someone manages it for me"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="manage" value={opt} checked={formData.manageWorkflow === opt} onChange={(e) => updateField("manageWorkflow", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">5. How much time do you spend each week creating and posting content? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Less than 2 hours", "2–5 hours", "5–10 hours", "More than 10 hours"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="time" value={opt} checked={formData.timeSpent === opt} onChange={(e) => updateField("timeSpent", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
             </div>
-            <div>
-              <Label className="mb-2 block text-slate-900 font-semibold">Email Address <span className="text-red-500">*</span></Label>
-              <Input type="email" required placeholder="jane@example.com" value={formData.email} onChange={(e: any) => updateField("email", e.target.value)} />
+          )}
+
+          {/* PAGE 2: Questions 6 - 10 */}
+          {currentPage === 2 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+              <div className="pt-4 pb-2 border-b border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800">Section 3: Pain Points</h2>
+              </div>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">6. What is the most frustrating part of posting on social media? <span className="text-red-500">*</span></Label>
+                <Textarea required className="mt-4" rows={3} placeholder="Short answer..." value={formData.frustratingPart} onChange={(e: any) => updateField("frustratingPart", e.target.value)} />
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">7. Have you ever created content but forgotten to post it? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Frequently", "Sometimes", "Rarely", "Never"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="forgot" value={opt} checked={formData.forgottenPost === opt} onChange={(e) => updateField("forgottenPost", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">8. Have you ever stopped posting consistently because it became too time-consuming? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Yes", "No"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="stopped" value={opt} checked={formData.stoppedConsistently === opt} onChange={(e) => updateField("stoppedConsistently", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <div className="pt-8 pb-2 border-b border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800">Section 4: The Idea</h2>
+              </div>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900 leading-snug">9. If you could spend one day creating content for the entire week, then upload everything into one folder and have AI automatically: Write captions, Generate hashtags, Schedule posts, and Publish at the best times... How valuable would that be to you? <span className="text-red-500">*</span></Label>
+                <div className="flex justify-between mt-6 px-2">
+                  {[1, 2, 3, 4, 5].map(opt => (
+                    <label key={opt} className="flex flex-col items-center space-y-2 cursor-pointer group">
+                      <span className="text-xl">⭐</span>
+                      <input type="radio" required name="value" value={opt.toString()} checked={formData.valueScore === opt.toString()} onChange={(e) => updateField("valueScore", e.target.value)} className="w-5 h-5 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-bold">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex justify-between text-xs text-slate-500 mt-2 font-medium">
+                   <span>Not Valuable</span>
+                   <span>Extremely Valuable</span>
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">10. Which feature would save you the most time? (Choose up to 3) <span className="text-red-500">*</span></Label>
+                <p className="text-sm text-slate-500 font-medium">Selected: {formData.saveTimeFeature.length}/3</p>
+                <div className="space-y-3 mt-4">
+                  {["Automatic scheduling", "AI captions", "AI hashtags", "Automatic posting", "Best posting time recommendations", "Calendar view", "Analytics", "Approval before posting"].map(opt => {
+                    const isSelected = formData.saveTimeFeature.includes(opt);
+                    const disabled = !isSelected && formData.saveTimeFeature.length >= 3;
+                    return (
+                      <label key={opt} className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors ${disabled ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50' : 'cursor-pointer hover:bg-slate-50 border-slate-200'}`}>
+                        <input type="checkbox" disabled={disabled} checked={isSelected} onChange={() => handleCheckbox("saveTimeFeature", opt, 3)} className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-600" />
+                        <span className="text-slate-700 font-medium">{opt}</span>
+                      </label>
+                    )
+                  })}
+                </div>
+              </Card>
             </div>
-            <div>
-              <Label className="mb-2 block text-slate-900 font-semibold">Phone Number / WhatsApp</Label>
-              <Input type="tel" placeholder="+1234567890" value={formData.whatsapp} onChange={(e: any) => updateField("whatsapp", e.target.value)} />
+          )}
+
+          {/* PAGE 3: Questions 11 - 15 & Contact */}
+          {currentPage === 3 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+              
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">11. Would you trust AI to automatically publish your content without reviewing every post? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Yes", "Yes, but only after I approve it once", "Maybe", "No"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="trust" value={opt} checked={formData.trustAI === opt} onChange={(e) => updateField("trustAI", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">12. If this platform saved you 5–10 hours every week, would you consider paying for it? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Yes", "Maybe", "No"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="payAI" value={opt} checked={formData.payConsideration === opt} onChange={(e) => updateField("payConsideration", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900">13. What would stop you from using a platform like this? <span className="text-red-500">*</span></Label>
+                <Textarea required className="mt-4" rows={3} placeholder="Short answer..." value={formData.stopUsing} onChange={(e: any) => updateField("stopUsing", e.target.value)} />
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200 transition-all">
+                <Label className="text-lg text-slate-900">14. Would you like early access when we launch? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Yes", "No"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="early" value={opt} checked={formData.wantsEarlyAccess === opt} onChange={(e) => updateField("wantsEarlyAccess", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 md:p-8 space-y-4 shadow-sm border-slate-200">
+                <Label className="text-lg text-slate-900 leading-snug">15. If you knew your social media would run automatically for the next 7 days, how likely would you be to spend one day each week creating all your content in advance? <span className="text-red-500">*</span></Label>
+                <div className="space-y-3 mt-4">
+                  {["Very likely", "Likely", "Not sure", "Unlikely", "Very unlikely"].map(opt => (
+                    <label key={opt} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                      <input type="radio" required name="batch" value={opt} checked={formData.batchCreationLikelihood === opt} onChange={(e) => updateField("batchCreationLikelihood", e.target.value)} className="w-4 h-4 text-indigo-600 focus:ring-indigo-600" />
+                      <span className="text-slate-700 font-medium">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </Card>
+
+              <div className="pt-8 pb-2 border-b border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800">Section 5: Contact Details</h2>
+              </div>
+
+              <Card className="p-6 md:p-8 space-y-6 shadow-sm border-slate-200">
+                <p className="text-sm text-slate-500 font-medium">Leave your details below so we can contact you.</p>
+                <div>
+                  <Label className="mb-2 block text-slate-900 font-semibold">Name</Label>
+                  <Input placeholder="Jane Doe" value={formData.name} onChange={(e: any) => updateField("name", e.target.value)} />
+                </div>
+                <div>
+                  <Label className="mb-2 block text-slate-900 font-semibold">Email Address <span className="text-red-500">*</span></Label>
+                  <Input type="email" required placeholder="jane@example.com" value={formData.email} onChange={(e: any) => updateField("email", e.target.value)} />
+                </div>
+                <div>
+                  <Label className="mb-2 block text-slate-900 font-semibold">Phone Number / WhatsApp</Label>
+                  <Input type="tel" placeholder="+1234567890" value={formData.whatsapp} onChange={(e: any) => updateField("whatsapp", e.target.value)} />
+                </div>
+              </Card>
             </div>
-          </Card>
+          )}
 
           {error && (
              <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-200 text-center">
@@ -289,9 +393,24 @@ export default function SurveyForm() {
              </div>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full h-14 text-lg font-bold shadow-md hover:shadow-lg transition-all rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white">
-            {isSubmitting ? "Submitting..." : "Submit Survey"}
-          </Button>
+          {/* Navigation Controls */}
+          <div className="flex gap-4 pt-4">
+            {currentPage > 1 && (
+              <Button type="button" onClick={handleBack} variant="outline" className="w-1/3 h-14 text-lg font-bold rounded-xl border-slate-300 text-slate-700 hover:bg-slate-100">
+                Back
+              </Button>
+            )}
+            
+            {currentPage < 3 ? (
+              <Button type="button" onClick={handleNext} className="flex-1 h-14 text-lg font-bold shadow-md hover:shadow-lg transition-all rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white">
+                Next
+              </Button>
+            ) : (
+              <Button type="submit" disabled={isSubmitting} className="flex-1 h-14 text-lg font-bold shadow-md hover:shadow-lg transition-all rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white">
+                {isSubmitting ? "Submitting..." : "Submit Survey"}
+              </Button>
+            )}
+          </div>
           
         </form>
       </div>
