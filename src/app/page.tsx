@@ -311,18 +311,6 @@ export default function SurveyForm() {
             {formData.wantsEarlyAccess === "Yes" && (
               <div className="pt-6 mt-6 border-t border-slate-100 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
                 <p className="text-sm text-slate-500 font-medium mb-4">Awesome! Please leave your details below so we can contact you.</p>
-                <div>
-                  <Label className="mb-2 block">Name (optional)</Label>
-                  <Input placeholder="Jane Doe" value={formData.name} onChange={(e: any) => updateField("name", e.target.value)} />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Email Address (optional)</Label>
-                  <Input type="email" placeholder="jane@example.com" value={formData.email} onChange={(e: any) => updateField("email", e.target.value)} />
-                </div>
-                <div>
-                  <Label className="mb-2 block">WhatsApp Number (optional)</Label>
-                  <Input type="tel" placeholder="+1234567890" value={formData.whatsapp} onChange={(e: any) => updateField("whatsapp", e.target.value)} />
-                </div>
               </div>
             )}
           </Card>
@@ -336,6 +324,26 @@ export default function SurveyForm() {
                   <span className="text-slate-700 font-medium">{opt}</span>
                 </label>
               ))}
+            </div>
+          </Card>
+
+          <div className="pt-8 pb-2 border-b border-slate-200">
+            <h2 className="text-2xl font-bold text-slate-800">Section 5: Contact Details</h2>
+          </div>
+
+          <Card className="p-6 md:p-8 space-y-6 shadow-sm border-slate-200">
+            <p className="text-sm text-slate-500 font-medium">Leave your details below so we can contact you.</p>
+            <div>
+              <Label className="mb-2 block text-slate-900 font-semibold">Name</Label>
+              <Input placeholder="Jane Doe" value={formData.name} onChange={(e: any) => updateField("name", e.target.value)} />
+            </div>
+            <div>
+              <Label className="mb-2 block text-slate-900 font-semibold">Email Address <span className="text-red-500">*</span></Label>
+              <Input type="email" required placeholder="jane@example.com" value={formData.email} onChange={(e: any) => updateField("email", e.target.value)} />
+            </div>
+            <div>
+              <Label className="mb-2 block text-slate-900 font-semibold">Phone Number / WhatsApp</Label>
+              <Input type="tel" placeholder="+1234567890" value={formData.whatsapp} onChange={(e: any) => updateField("whatsapp", e.target.value)} />
             </div>
           </Card>
 

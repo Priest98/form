@@ -36,11 +36,11 @@ ${body.stopUsing}
 *Batch Creation Likelihood:* ${body.batchCreationLikelihood}
 
 *Early Access:* ${body.wantsEarlyAccess === "Yes" ? '✅ Yes' : '❌ No'}
-${body.wantsEarlyAccess === "Yes" ? `
+
 *Contact Details:*
 Name: ${body.name || 'N/A'}
 Email: ${body.email || 'N/A'}
-WhatsApp: ${body.whatsapp || 'N/A'}` : ''}
+WhatsApp: ${body.whatsapp || 'N/A'}
 `;
 
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
