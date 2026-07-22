@@ -1,27 +1,8 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    const response = await prisma.surveyResponse.create({
-      data: {
-        yearsInBusiness: body.yearsInBusiness,
-        acceptsInterns: body.acceptsInterns,
-        findingMethods: JSON.stringify(body.findingMethods),
-        biggestChallenge: body.biggestChallenge,
-        struggledReliability: body.struggledReliability,
-        wouldUsePlatform: body.wouldUsePlatform,
-        valuableFeatures: JSON.stringify(body.valuableFeatures),
-        wouldPay: body.wouldPay,
-        improvement: body.improvement,
-        wantsEarlyAccess: body.wantsEarlyAccess,
-        name: body.name || null,
-        whatsapp: body.whatsapp || null,
-        email: body.email || null,
-      },
-    });
 
     // Send to Telegram if configured
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -107,7 +88,7 @@ WhatsApp: ${body.whatsapp || 'N/A'}` : ''}
       }).catch(err => console.error("Failed to send automated email:", err));
     }
 
-    return NextResponse.json({ success: true, id: response.id });
+    return NextResponse.json({ success: true, id: "recorded" });
   } catch (error: any) {
     console.error("Survey submission error:", error);
     return NextResponse.json(
