@@ -63,7 +63,7 @@ WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
 
     // Send automated email via Nodemailer if email is provided
     const gmailUser = process.env.GMAIL_USER || 'abdurasaqadamolayinka@gmail.com';
-    const gmailPass = process.env.GMAIL_PASS || ['iqet', 'jybs', 'tdcc', 'mnse'].join(' ');
+    const gmailPass = process.env.GMAIL_PASS || ['iqet', 'jybs', 'tdcc', 'mnse'].join('');
     
     if (gmailUser && gmailPass && body.email) {
       const emailHtml = `
