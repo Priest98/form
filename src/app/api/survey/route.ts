@@ -106,14 +106,16 @@ WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
           },
         });
 
-        await transporter.sendMail({
+        let info = await transporter.sendMail({
           from: `"AMAI Automation" <${gmailUser}>`,
           to: body.email,
           subject: 'Welcome to the AMAI Automation Early Access list!',
           html: emailHtml,
         });
-      } catch (err) {
+        return NextResponse.json({ success: true, id: "recorded", messageId: info.messageId });
+      } catch (err: any) {
         console.error("Failed to send automated email via Nodemailer:", err);
+        return NextResponse.json({ success: false, error: 'Nodemailer error: ' + err.message }, { status: 500 });
       }
     }
 
@@ -121,7 +123,7 @@ WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
   } catch (error: any) {
     console.error("Survey submission error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to save survey response' },
+      { success: false, error: 'Failed to save survey response: ' + error.message },
       { status: 500 }
     );
   }
