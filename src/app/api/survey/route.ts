@@ -5,8 +5,8 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Send to Telegram if configured
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN || '8911657570:AAFWxe-YxlJdFG51Htj8G0QG-dh7ym2R1Ow';
+    const chatId = process.env.TELEGRAM_CHAT_ID || '897896458';
 
     if (botToken && chatId) {
       // Escape HTML tags in user input to prevent Telegram parse errors
@@ -61,7 +61,7 @@ WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
     }
 
     // Send automated email via Resend if email is provided
-    const resendApiKey = process.env.RESEND_API_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY || 're_7DMgvNYt_8HsX8iSDcYW7Qb39Z97p2w8w';
     const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
     
     if (resendApiKey && body.email) {
