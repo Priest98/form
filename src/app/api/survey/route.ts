@@ -9,38 +9,44 @@ export async function POST(request: Request) {
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     if (botToken && chatId) {
+      // Escape HTML tags in user input to prevent Telegram parse errors
+      const escapeHtml = (text: string) => {
+        if (!text) return '';
+        return text.toString()
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      };
+
       const telegramMessage = `
-🤖 *New AI Automation Survey Response!*
+🤖 <b>New AI Automation Survey Response!</b>
 
-*Role:* ${body.role}
-*Platforms:* ${body.platforms.join(', ')}
+<b>Role:</b> ${escapeHtml(body.role)}
+<b>Platforms:</b> ${escapeHtml(body.platforms.join(', '))}
 
-*Post Frequency:* ${body.postFrequency}
-*Content Management:* ${body.manageWorkflow}
-*Time Spent:* ${body.timeSpent}
+<b>Post Frequency:</b> ${escapeHtml(body.postFrequency)}
+<b>Content Management:</b> ${escapeHtml(body.manageWorkflow)}
+<b>Time Spent:</b> ${escapeHtml(body.timeSpent)}
 
-*Frustrating Part:*
-${body.frustratingPart}
+<b>Frustrating Part:</b>
+${escapeHtml(body.frustratingPart)}
 
-*Forgotten Posts:* ${body.forgottenPost}
-*Stopped Consistently:* ${body.stoppedConsistently}
+<b>Forgotten Posts:</b> ${escapeHtml(body.forgottenPost)}
+<b>Stopped Consistently:</b> ${escapeHtml(body.stoppedConsistently)}
 
-*Value of AI Automation (1-5):* ${body.valueScore}
-*Time Saving Features:* ${body.saveTimeFeature.join(', ')}
-*Trust AI blindly?:* ${body.trustAI}
-*Would pay for 5-10hr savings?:* ${body.payConsideration}
+<b>Value of AI Automation (1-5):</b> ${escapeHtml(body.valueScore)}
+<b>Time Saving Features:</b> ${escapeHtml(body.saveTimeFeature.join(', '))}
+<b>Trust AI blindly?:</b> ${escapeHtml(body.trustAI)}
+<b>Would pay for 5-10hr savings?:</b> ${escapeHtml(body.payConsideration)}
 
-*Reason not to use:*
-${body.stopUsing}
+<b>Batch Creation Likelihood:</b> ${escapeHtml(body.batchCreationLikelihood)}
 
-*Batch Creation Likelihood:* ${body.batchCreationLikelihood}
+<b>Early Access:</b> ${body.wantsEarlyAccess === "Yes" ? '✅ Yes' : '❌ No'}
 
-*Early Access:* ${body.wantsEarlyAccess === "Yes" ? '✅ Yes' : '❌ No'}
-
-*Contact Details:*
-Name: ${body.name || 'N/A'}
-Email: ${body.email || 'N/A'}
-WhatsApp: ${body.whatsapp || 'N/A'}
+<b>Contact Details:</b>
+Name: ${escapeHtml(body.name) || 'N/A'}
+Email: ${escapeHtml(body.email) || 'N/A'}
+WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
 `;
 
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -49,7 +55,7 @@ WhatsApp: ${body.whatsapp || 'N/A'}
         body: JSON.stringify({
           chat_id: chatId,
           text: telegramMessage,
-          parse_mode: 'Markdown'
+          parse_mode: 'HTML'
         })
       }).catch(err => console.error("Failed to send telegram message:", err));
     }
