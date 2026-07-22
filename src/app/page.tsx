@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ArrowRight, ArrowLeft, Sparkles, Zap } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, BrainCircuit, Timer, Zap } from "lucide-react";
 
 const TOTAL_STEPS = 15;
 
@@ -261,7 +261,7 @@ export default function SurveyForm() {
                 <div className="absolute top-0 left-0 w-full h-1/2 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none -translate-y-1/2" />
                 
                 <div className="relative z-10 flex items-center space-x-2 text-indigo-400 font-semibold tracking-wider text-sm uppercase mb-4">
-                  <Sparkles className="w-5 h-5" />
+                  <BrainCircuit className="w-5 h-5" />
                   <span>Early Access</span>
                 </div>
                 
@@ -279,7 +279,7 @@ export default function SurveyForm() {
                     <span className="font-medium text-zinc-200">AI Captions & Scheduling</span>
                   </div>
                   <div className="flex items-center space-x-3 bg-black/20 p-4 rounded-2xl border border-white/5">
-                    <Sparkles className="w-6 h-6 text-indigo-400" />
+                    <Timer className="w-6 h-6 text-indigo-400" />
                     <span className="font-medium text-zinc-200">10x Faster Workflow</span>
                   </div>
                 </div>
