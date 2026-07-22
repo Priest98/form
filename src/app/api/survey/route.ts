@@ -10,27 +10,33 @@ export async function POST(request: Request) {
 
     if (botToken && chatId) {
       const telegramMessage = `
-🎉 *New Survey Response!*
+🤖 *New AI Automation Survey Response!*
 
-*Years in Biz:* ${body.yearsInBusiness}
-*Accepts Interns:* ${body.acceptsInterns}
-*Finding Methods:* ${body.findingMethods.join(', ')}
+*Role:* ${body.role}
+*Platforms:* ${body.platforms.join(', ')}
 
-*Biggest Challenge:*
-${body.biggestChallenge}
+*Post Frequency:* ${body.postFrequency}
+*Content Management:* ${body.manageWorkflow}
+*Time Spent:* ${body.timeSpent}
 
-*Struggled w/ Reliability:* ${body.struggledReliability}
-*Would Use Platform:* ${body.wouldUsePlatform}
-*Would Pay:* ${body.wouldPay}
+*Frustrating Part:*
+${body.frustratingPart}
 
-*Valuable Features:*
-${body.valuableFeatures.join(', ')}
+*Forgotten Posts:* ${body.forgottenPost}
+*Stopped Consistently:* ${body.stoppedConsistently}
 
-*Improvement Wanted:*
-${body.improvement}
+*Value of AI Automation (1-5):* ${body.valueScore}
+*Time Saving Features:* ${body.saveTimeFeature.join(', ')}
+*Trust AI blindly?:* ${body.trustAI}
+*Would pay for 5-10hr savings?:* ${body.payConsideration}
 
-*Early Access:* ${body.wantsEarlyAccess ? '✅ Yes' : '❌ No'}
-${body.wantsEarlyAccess ? `
+*Reason not to use:*
+${body.stopUsing}
+
+*Batch Creation Likelihood:* ${body.batchCreationLikelihood}
+
+*Early Access:* ${body.wantsEarlyAccess === "Yes" ? '✅ Yes' : '❌ No'}
+${body.wantsEarlyAccess === "Yes" ? `
 *Contact Details:*
 Name: ${body.name || 'N/A'}
 Email: ${body.email || 'N/A'}
@@ -55,20 +61,20 @@ WhatsApp: ${body.whatsapp || 'N/A'}` : ''}
     if (resendApiKey && body.email) {
       const emailHtml = `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #0f172a;">Thank you for your feedback! 🎉</h2>
+          <h2 style="color: #4f46e5;">Welcome to the Future of Content Creation! 🤖</h2>
           <p style="color: #334155; font-size: 16px; line-height: 1.5;">
             Hi ${body.name ? body.name.split(' ')[0] : 'there'},
           </p>
           <p style="color: #334155; font-size: 16px; line-height: 1.5;">
-            We've received your responses to the Fashion Business Internship Survey. Your insights are incredibly valuable and will help us shape a platform that genuinely supports established designers like you.
+            Thank you so much for taking the time to share your workflow with us. Your insights on social media management are incredibly valuable and will directly shape the AI automation tools we are building.
           </p>
-          ${body.wantsEarlyAccess ? `
+          ${body.wantsEarlyAccess === "Yes" ? `
           <p style="color: #334155; font-size: 16px; line-height: 1.5;">
-            Since you requested early access, we've added you to our priority list. We'll reach out to you as soon as we're ready for our beta launch!
+            Since you requested early access, we've officially added you to our priority waitlist! You'll be one of the very first to test the platform when we launch.
           </p>` : ''}
           <p style="color: #334155; font-size: 16px; line-height: 1.5; margin-top: 32px;">
             Best regards,<br>
-            <strong>The Fashion Platform Team</strong>
+            <strong>The AI Social Media Team</strong>
           </p>
         </div>
       `;
@@ -80,9 +86,9 @@ WhatsApp: ${body.whatsapp || 'N/A'}` : ''}
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: `Fashion Platform <${fromEmail}>`,
+          from: `AI Content Platform <${fromEmail}>`,
           to: body.email,
-          subject: 'Thank you for shaping the future of fashion internships!',
+          subject: 'Thank you for shaping the future of AI social media!',
           html: emailHtml
         })
       }).catch(err => console.error("Failed to send automated email:", err));
