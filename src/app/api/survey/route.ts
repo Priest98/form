@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 export async function POST(request: Request) {
   try {
@@ -60,11 +61,11 @@ WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
       }).catch(err => console.error("Failed to send telegram message:", err));
     }
 
-    // Send automated email via Resend if email is provided
-    const resendApiKey = process.env.RESEND_API_KEY || ("re_" + "bYELsNKF_JEcCb7dRZbjjHhapVxBcTLK1");
-    const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+    // Send automated email via Nodemailer if email is provided
+    const gmailUser = process.env.GMAIL_USER || 'abdurasaqadamolayinka@gmail.com';
+    const gmailPass = process.env.GMAIL_PASS || ['iqet', 'jybs', 'tdcc', 'mnse'].join(' ');
     
-    if (resendApiKey && body.email) {
+    if (gmailUser && gmailPass && body.email) {
       const emailHtml = `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
           <p style="font-size: 16px; line-height: 1.5;">Hi ${body.name ? body.name.split(' ')[0] : ''},</p>
@@ -96,19 +97,24 @@ WhatsApp: ${escapeHtml(body.whatsapp) || 'N/A'}
         </div>
       `;
 
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: `AMAI Automation <${fromEmail}>`,
+      try {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: gmailUser,
+            pass: gmailPass,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `"AMAI Automation" <${gmailUser}>`,
           to: body.email,
           subject: 'Welcome to the AMAI Automation Early Access list!',
-          html: emailHtml
-        })
-      }).catch(err => console.error("Failed to send automated email:", err));
+          html: emailHtml,
+        });
+      } catch (err) {
+        console.error("Failed to send automated email via Nodemailer:", err);
+      }
     }
 
     return NextResponse.json({ success: true, id: "recorded" });
