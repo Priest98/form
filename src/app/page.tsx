@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ArrowRight, ArrowLeft } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, Sparkles, Zap } from "lucide-react";
 
 const TOTAL_STEPS = 15;
 
@@ -256,22 +256,43 @@ export default function SurveyForm() {
             
             {/* 0. INTRO */}
             {currentStep === 0 && (
-              <div className="text-left space-y-6 sm:space-y-8 bg-zinc-900/40 p-6 sm:p-8 md:p-12 rounded-3xl border border-white/5 backdrop-blur-lg mt-8 md:mt-0">
-                <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white to-zinc-400 pb-2">
-                  AI Social Media<br/>Automation
+              <div className="relative text-left space-y-6 sm:space-y-8 bg-zinc-900/60 p-8 sm:p-10 md:p-14 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl mt-8 md:mt-0 overflow-hidden">
+                {/* Decorative background glow */}
+                <div className="absolute top-0 left-0 w-full h-1/2 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none -translate-y-1/2" />
+                
+                <div className="relative z-10 flex items-center space-x-2 text-indigo-400 font-semibold tracking-wider text-sm uppercase mb-4">
+                  <Sparkles className="w-5 h-5" />
+                  <span>Early Access</span>
+                </div>
+                
+                <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white via-zinc-200 to-zinc-500 pb-2">
+                  AMAI Social Media<br/>Automation
                 </h1>
-                <p className="text-lg sm:text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed">
+                
+                <p className="relative z-10 text-lg sm:text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed">
                   Imagine spending one day creating content, uploading it to a folder, and having AI automatically generate captions, schedule, and publish your content throughout the week.
                 </p>
-                <div className="pt-4 sm:pt-8">
+
+                <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 my-8 text-zinc-400">
+                  <div className="flex items-center space-x-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                    <Zap className="w-6 h-6 text-indigo-400" />
+                    <span className="font-medium text-zinc-200">AI Captions & Scheduling</span>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                    <Sparkles className="w-6 h-6 text-indigo-400" />
+                    <span className="font-medium text-zinc-200">10x Faster Workflow</span>
+                  </div>
+                </div>
+
+                <div className="relative z-10 pt-4 sm:pt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                   <button 
                     onClick={handleNext}
-                    className="group relative inline-flex h-14 sm:h-16 items-center justify-center overflow-hidden rounded-full bg-indigo-600 px-8 sm:px-12 font-semibold text-neutral-50 duration-300 hover:bg-indigo-500 hover:scale-105 shadow-xl shadow-indigo-600/20"
+                    className="group relative inline-flex h-14 sm:h-16 items-center justify-center overflow-hidden rounded-full bg-indigo-600 px-8 sm:px-12 font-semibold text-neutral-50 duration-300 hover:bg-indigo-500 hover:scale-105 shadow-[0_0_40px_rgba(79,70,229,0.3)]"
                   >
-                    <span className="text-lg sm:text-xl">Start Survey</span>
-                    <ArrowRight className="ml-3 w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-1" />
+                    <span className="text-lg sm:text-xl relative z-10">Start Survey</span>
+                    <ArrowRight className="ml-3 w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-1 relative z-10" />
                   </button>
-                  <p className="text-zinc-400 mt-4 text-sm font-medium hidden md:block">Press Enter ↵</p>
+                  <p className="text-zinc-500 text-sm font-medium hidden md:block mt-2 sm:mt-0">Takes &lt; 3 mins <br/> Press Enter ↵</p>
                 </div>
               </div>
             )}
